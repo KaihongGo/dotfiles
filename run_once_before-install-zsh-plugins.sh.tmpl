@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+# Clones useful Oh My Zsh plugins.
+
+set -eu
+
+plugdir="$HOME/.oh-my-zsh/custom/plugins"
+mkdir -p "$plugdir"
+
+clone() {
+  [ -d "$plugdir/$2" ] || git clone --depth 1 "$1" "$plugdir/$2"
+}
+
+clone https://github.com/zsh-users/zsh-autosuggestions.git    zsh-autosuggestions
+clone https://github.com/zsh-users/zsh-syntax-highlighting.git zsh-syntax-highlighting
+clone https://github.com/zsh-users/zsh-completions.git         zsh-completions
+

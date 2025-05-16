@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+# Installs Oh My Zsh without prompting or auto-switching shells.
+
+set -eu
+
+export RUNZSH=no    # don’t launch a shell
+export CHSH=no      # we did chsh above
+
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+fi
+
