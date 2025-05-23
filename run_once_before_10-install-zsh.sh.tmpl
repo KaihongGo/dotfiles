@@ -15,7 +15,16 @@ if ! command -v zsh >/dev/null 2>&1; then
 fi
 
 # Set zsh as default shell (if not already):
+# Get the actual user (not root when running with sudo)
+ACTUAL_USER="${SUDO_USER:-$USER}"
+ACTUAL_HOME=$(getent passwd "$ACTUAL_USER" | cut -d: -f6)
+
 if [ "$SHELL" != "$(command -v zsh)" ]; then
-  chsh -s "$(command -v zsh)" "$USER"
+  # Use sudo to change shell for the actual user
+  if [ "$EUID" -eq 0 ] && [ -n "$SUDO_USER" ]; then
+    chsh -s "$(command -v zsh)" "$SUDO_USER"
+  else
+    chsh -s "$(command -v zsh)" "$USER"
+  fi
 fi
 

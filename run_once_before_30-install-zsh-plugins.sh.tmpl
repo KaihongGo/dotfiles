@@ -3,11 +3,25 @@
 
 set -eu
 
-plugdir="$HOME/.oh-my-zsh/custom/plugins"
-mkdir -p "$plugdir"
+# Get the actual user and home directory (not root when running with sudo)
+ACTUAL_USER="${SUDO_USER:-$USER}"
+ACTUAL_HOME=$(getent passwd "$ACTUAL_USER" | cut -d: -f6)
+
+plugdir="$ACTUAL_HOME/.oh-my-zsh/custom/plugins"
+
+# Create the plugins directory as the actual user
+if [ "$EUID" -eq 0 ] && [ -n "$SUDO_USER" ]; then
+  sudo -u "$SUDO_USER" mkdir -p "$plugdir"
+else
+  mkdir -p "$plugdir"
+fi
 
 clone() {
-  [ -d "$plugdir/$2" ] || git clone --depth 1 "$1" "$plugdir/$2"
+  if [ "$EUID" -eq 0 ] && [ -n "$SUDO_USER" ]; then
+    [ -d "$plugdir/$2" ] || sudo -u "$SUDO_USER" git clone --depth 1 "$1" "$plugdir/$2"
+  else
+    [ -d "$plugdir/$2" ] || git clone --depth 1 "$1" "$plugdir/$2"
+  fi
 }
 
 clone https://github.com/zsh-users/zsh-autosuggestions.git    zsh-autosuggestions
